@@ -1,14 +1,15 @@
-import pygame
-import requests
 import os
 
+import pygame
+import requests
+
 clock = pygame.time.Clock()
-c = 0
 map_request = "https://static-maps.yandex.ru/1.x/"
-lon = '42.588353'
-lat = '58.006297'
-delta = '1.0'
-l = 'sat'
+print("Введите: ")
+lon = input("Долготу: ")
+lat = input("Широту: ")
+delta = input("Приближение: ")
+l = input("Тип: ")
 # lon, lat, delta = input(), input(), input()
 # ?ll=42.588353%2C-58.006297&spn=1.0,1.5&l=sat
 params = {

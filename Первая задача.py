@@ -9,11 +9,12 @@ print("Введите: ")
 lon = input("Долготу: ")
 lat = input("Широту: ")
 delta = input("Приближение: ")
+l = input("Тип: ")
 
 params = {
     "ll": ",".join([lon, lat]),
     "spn": ",".join([delta, delta]),
-    "l": "map"
+    "l": l
 }
 resp = requests.get(api_server, params=params)
 map_file = "map.png"

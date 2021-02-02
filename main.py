@@ -2,9 +2,19 @@ import pygame
 import requests
 
 clock = pygame.time.Clock()
-c = 0
-map_request = "https://static-maps.yandex.ru/1.x/?ll=42.588353%2C-58.006297&spn=1.0,1.5&l=sat"
-resp = requests.get(map_request)
+
+api_server = "http://static-maps.yandex.ru/1.x/"
+
+lon = "37.530887"
+lat = "55.703118"
+delta = "0.002"
+
+params = {
+    "ll": ",".join([lon, lat]),
+    "spn": ",".join([delta, delta]),
+    "l": "map"
+}
+resp = requests.get(api_server, params=params)
 map_file = "map.png"
 with open(map_file, "wb") as file:
     file.write(resp.content)

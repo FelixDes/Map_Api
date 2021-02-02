@@ -1,32 +1,52 @@
-import pygame
-import requests
 import os
 
+import pygame
+import requests
+
 clock = pygame.time.Clock()
-c = 0
 map_request = "https://static-maps.yandex.ru/1.x/"
-lon = '42.588353'
-lat = '58.006297'
-delta = '1.0'
-l = 'sat'
+map_file = "map.png"
+print("Введите: ")
+lon = float(input("Долготу: "))
+lat = float(input("Широту: "))
+delta = float(input("Приближение: "))
+l = input("Тип: ")
 # lon, lat, delta = input(), input(), input()
 # ?ll=42.588353%2C-58.006297&spn=1.0,1.5&l=sat
-params = {
-    "ll": ",".join([lon, lat]),
-    "spn": ",".join([delta, delta]),
-    "l": l
-}
-resp = requests.get(map_request, params=params)
-map_file = "map.png"
-with open(map_file, "wb") as file:
-    file.write(resp.content)
+def new_image():
+    global map_file
+    params = {
+        "ll": ",".join([str(lon), str(lat)]),
+        "spn": ",".join([str(delta), str(delta)]),
+        "l": l
+            }
+    resp = requests.get(map_request, params=params)
+    map_file = "map.png"
+    with open(map_file, "wb") as file:
+        file.write(resp.content)
+    file.close()
 
+
+new_image()
 pygame.init()
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_PAGEUP:
+                try:
+                    delta -= 0.05
+                    new_image()
+                except pygame.error:
+                    delta += 0.05
+            elif event.key == pygame.K_PAGEDOWN:
+                try:
+                    delta += 0.05
+                    new_image()
+                except pygame.error:
+                    delta -= 0.05
     clock.tick(1)
     screen = pygame.display.set_mode((600, 450))
     screen.blit(pygame.image.load(map_file), (0, 0))

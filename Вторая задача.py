@@ -5,7 +5,7 @@ import requests
 
 clock = pygame.time.Clock()
 map_request = "https://static-maps.yandex.ru/1.x/"
-map_file = None
+map_file = "map.png"
 print("Введите: ")
 lon = float(input("Долготу: "))
 lat = float(input("Широту: "))
@@ -24,6 +24,7 @@ def new_image():
     map_file = "map.png"
     with open(map_file, "wb") as file:
         file.write(resp.content)
+    file.close()
 
 
 new_image()
@@ -35,11 +36,17 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_PAGEUP:
-                delta -= 0.1
-                new_image()
+                try:
+                    delta -= 0.05
+                    new_image()
+                except pygame.error:
+                    delta += 0.05
             elif event.key == pygame.K_PAGEDOWN:
-                delta += 0.1
-                new_image()
+                try:
+                    delta += 0.05
+                    new_image()
+                except pygame.error:
+                    delta -= 0.05
     clock.tick(1)
     screen = pygame.display.set_mode((600, 450))
     screen.blit(pygame.image.load(map_file), (0, 0))

@@ -5,9 +5,9 @@ clock = pygame.time.Clock()
 
 api_server = "http://static-maps.yandex.ru/1.x/"
 
-lon = "37.530887"
-lat = "55.703118"
-delta = "0.002"
+lon = "35.511387"
+lat = "48.709887"
+delta = "0.004"
 
 params = {
     "ll": ",".join([lon, lat]),

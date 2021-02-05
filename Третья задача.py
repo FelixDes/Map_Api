@@ -1,50 +1,92 @@
-import pygame
-import requests
 import os
 
+import pygame
+import requests
+
 clock = pygame.time.Clock()
-c = 0
 map_request = "https://static-maps.yandex.ru/1.x/"
-lon = '40'
-lat = '40'
-delta = '10'
-l = 'sat'
+map_file = "map.png"
+print("Введите: ")
+lon = float(input("Долготу: "))
+lat = float(input("Широту: "))
+delta = float(input("Приближение: "))
+l = input("Тип: ")
 # lon, lat, delta = input(), input(), input()
 # ?ll=42.588353%2C-58.006297&spn=1.0,1.5&l=sat
-map_file = "map.png"
-def update():
-    print(lon, lat)
+a = ''
+def new_image():
+    global map_file, a
     params = {
-        "ll": ",".join([lon, lat]),
-        "spn": ",".join([delta, delta]),
+        "ll": ",".join([str(lon), str(lat)]),
+        "spn": ",".join([str(delta), str(delta)]),
         "l": l
     }
     resp = requests.get(map_request, params=params)
+    map_file = "map.png"
     with open(map_file, "wb") as file:
+        if a != resp.content:
+            a = resp.content
+        #     print(False)
+        # print('map', delta)
         file.write(resp.content)
-update()
+    file.close()
 
+
+new_image()
 pygame.init()
 running = True
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                lon = str(int(lon) - int(delta) * 2)
-                update()
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_PAGEUP:
+                try:
+
+                    if delta <= 10:
+                        delta -= 10
+                    else:
+                        delta -= delta / 2
+                    new_image()
+                except pygame.error:
+                    delta = 0.001
+            elif event.key == pygame.K_PAGEDOWN:
+                try:
+                    if delta <= 10:
+                        delta += delta
+                    else:
+                        delta += 10
+                    new_image()
+                except pygame.error:
+                    delta = max(90 - lat, 180 - lon)
+
+
             elif event.key == pygame.K_RIGHT:
-                lon = str(int(lon) + int(delta) * 2)
-                update()
-            elif event.key == pygame.K_DOWN:
-                lat = str(int(lat) - int(delta) * 2)
-                update()
+                try:
+                    lon += delta * 2
+                    new_image()
+                except pygame.error:
+                    lon -= delta * 2
+            elif event.key == pygame.K_LEFT:
+                try:
+                    lon -= delta * 2
+                    new_image()
+                except pygame.error:
+                    lon += delta * 2
             elif event.key == pygame.K_UP:
-                lat = str(int(lat) + int(delta) * 2)
-                update()
+                try:
+                    lat += delta * 2
+                    new_image()
+                except pygame.error:
+                    lat -= delta * 2
+            elif event.key == pygame.K_DOWN:
+                try:
+                    lat -= delta * 2
+                    new_image()
+                except pygame.error:
+                    lat += delta * 2
     clock.tick(1)
-    screen = pygame.display.set_mode((400, 400))
+    screen = pygame.display.set_mode((600, 450))
     screen.blit(pygame.image.load(map_file), (0, 0))
     pygame.display.flip()
 os.remove(map_file)

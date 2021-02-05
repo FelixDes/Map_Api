@@ -26,8 +26,6 @@ def new_image():
     with open(map_file, "wb") as file:
         if a != resp.content:
             a = resp.content
-        #     print(False)
-        # print('map', delta)
         file.write(resp.content)
     file.close()
 
@@ -41,53 +39,47 @@ while running:
             running = False
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_PAGEUP:
-                try:
-
-                    if delta <= 10:
-                        delta -= 10
-                    else:
-                        delta -= delta / 2
-                    new_image()
-                except pygame.error:
+                if delta <= 10:
+                    delta -= 10
+                else:
+                    delta -= delta / 2
+                if delta < 0.001:
                     delta = 0.001
+                new_image()
             elif event.key == pygame.K_PAGEDOWN:
-                try:
-                    if delta <= 10:
-                        delta += delta
-                    else:
-                        delta += 10
-                    new_image()
-                except pygame.error:
-                    delta = max(90 - lat, 180 - lon)
+                if delta <= 10:
+                    delta += delta
+                else:
+                    delta += 10
+                if delta > 90:
+                    delta = 90.0
+                new_image()
 
 
             elif event.key == pygame.K_RIGHT:
-                try:
-                    lon += delta * 2
-                    new_image()
-                except pygame.error:
+                lon += delta * 2
+                if lon > 180:
                     lon -= delta * 2
+                new_image()
             elif event.key == pygame.K_LEFT:
-                try:
-                    lon -= delta * 2
-                    new_image()
-                except pygame.error:
+                lon -= delta * 2
+                if lon < -180:
                     lon += delta * 2
+                new_image()
             elif event.key == pygame.K_UP:
-                try:
-                    lat += delta * 2
-                    new_image()
-                except pygame.error:
+                lat += delta * 2
+                if lat > 90:
                     lat -= delta * 2
+                new_image()
             elif event.key == pygame.K_DOWN:
-                try:
-                    lat -= delta * 2
-                    new_image()
-                except pygame.error:
+                lat -= delta * 2
+                if lat < -90:
                     lat += delta * 2
+                new_image()
     clock.tick(1)
     screen = pygame.display.set_mode((600, 450))
     screen.blit(pygame.image.load(map_file), (0, 0))
+
     pygame.display.flip()
 os.remove(map_file)
 pygame.quit()
